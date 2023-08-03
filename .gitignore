@@ -399,3 +399,4 @@ FodyWeavers.xsd
 
 #Personnal files
 /database.env
+database.env
