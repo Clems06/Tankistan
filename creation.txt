@@ -1,0 +1,9 @@
+USE tank_data;
+
+CREATE TABLE tanks (
+    PersonID VARCHAR(10),
+    x int,
+    y int
+);
+
+INSERT INTO tanks (PersonID, x, y) VALUES ("test1", 1, 2);

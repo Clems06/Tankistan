@@ -1,0 +1,1 @@
+mysql> CREATE USER 'local_user'@'localhost' IDENTIFIED BY 'pass';
