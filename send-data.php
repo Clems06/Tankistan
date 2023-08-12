@@ -46,14 +46,38 @@ Ids:
 5) Attack
 6) Give action
 */
-if ($id==1){
-    $sql = "UPDATE tanks SET actions = actions - 1, y = y - 1 WHERE name = ?;";
-} elseif ($id==2) {
-    $sql = "UPDATE tanks SET actions = actions - 1, y = y + 1 WHERE name = ?;";
-} elseif ($id==3) {
-    $sql = "UPDATE tanks SET actions = actions - 1, x = x - 1 WHERE name = ?;";
-} elseif ($id==4) {
-    $sql = "UPDATE tanks SET actions = actions - 1, x = x + 1 WHERE name = ?;";
+if ($id <= 4){
+    if ($id==1){
+        $sql = "UPDATE tanks SET actions = actions - 1, y = y - 1 WHERE name = ?;";
+        $new_x = $x;
+        $new_y = $y - 1;
+    } elseif ($id==2) {
+        $sql = "UPDATE tanks SET actions = actions - 1, y = y + 1 WHERE name = ?;";
+        $new_x = $x;
+        $new_y = $y + 1;
+    } elseif ($id==3) {
+        $sql = "UPDATE tanks SET actions = actions - 1, x = x - 1 WHERE name = ?;";
+        $new_x = $x - 1;
+        $new_y = $y;
+    } elseif ($id==4) {
+        $sql = "UPDATE tanks SET actions = actions - 1, x = x + 1 WHERE name = ?;";
+        $new_x = $x + 1;
+        $new_y = $y;
+    }
+
+    $check_if_empty = "SELECT id FROM tanks WHERE x = ? AND y = ?;";
+    if($stmt = mysqli_prepare($link, $check_if_empty)){
+        mysqli_stmt_bind_param($stmt, "ss", $new_x, $new_y);
+        if(mysqli_stmt_execute($stmt)){
+
+            mysqli_stmt_store_result($stmt);
+            
+            if(mysqli_stmt_num_rows($stmt) > 0){                    
+                exit("Not allowed");
+            }
+        }
+    }
+
 } elseif ($id==5 or $id==6) {
     $other = $_POST["other"];
     [$other_actions, $other_x, $other_y, $other_range] = get_tank_data($link, $other);
@@ -70,16 +94,20 @@ mysqli_stmt_bind_param($stmt, "s", $param_username);
 $param_username = $user;
 mysqli_stmt_execute($stmt);
 
-if ($id==5){
-    $sql = "UPDATE tanks SET health = health - 1 WHERE name = ?;";
-} elseif ($id==6) {
-    $sql = "UPDATE tanks SET actions = actions + 1 WHERE name = ?;";
+
+if ($id == 5 or $id == 6){
+    if ($id==5){
+        $sql = "UPDATE tanks SET health = health - 1 WHERE name = ?;";
+    } elseif ($id==6) {
+        $sql = "UPDATE tanks SET actions = actions + 1 WHERE name = ?;";
+    }
+
+    $stmt = mysqli_prepare($link, $sql);
+    mysqli_stmt_bind_param($stmt, "s", $param_username);
+    $param_username = $other;
+    mysqli_stmt_execute($stmt);
 }
 
-$stmt = mysqli_prepare($link, $sql);
-mysqli_stmt_bind_param($stmt, "s", $param_username);
-$param_username = $other;
-mysqli_stmt_execute($stmt);
 
 /*
 if($stmt = mysqli_prepare($link, $sql)){

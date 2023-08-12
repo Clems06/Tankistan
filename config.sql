@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS tanks
     name VARCHAR(100),
     x INT,
     y INT,
-	actions INT,
-    health INT,
+	actions INT DEFAULT 2,
+    health INT DEFAULT 3,
     bullet_range INT DEFAULT 2
 );

@@ -47,10 +47,10 @@ $all = mysqli_fetch_all($result, MYSQLI_ASSOC);
             <div class="row_buttons">
                <div id="left_button" class="ctrl_button"><img src="static/arrow_left.png" alt="arrow_left" class="button_img" onclick="sendData(3)"></img></div>
                <div id="center_button" class="ctrl_button"></div>
-               <div id="right_button" class="ctrl_button"><img src="static/arrow_right.png" alt="arrow_right" class="button_img" onclick="button_click(4)"></img></div>
+               <div id="right_button" class="ctrl_button"><img src="static/arrow_right.png" alt="arrow_right" class="button_img" onclick="sendData(4)"></img></div>
             </div>
             <div class="row_buttons">
-                <div id="bottom_button" class="ctrl_button"><img src="static/arrow_down.png" alt="arrow_down" class="button_img" onclick="button_click(2)"></img></div>
+                <div id="bottom_button" class="ctrl_button"><img src="static/arrow_down.png" alt="arrow_down" class="button_img" onclick="sendData(2)"></img></div>
             </div>
         </div>
     </div>
@@ -80,6 +80,15 @@ $all = mysqli_fetch_all($result, MYSQLI_ASSOC);
 </script>
 -->
 <script type="text/javascript">
+    document.addEventListener("keydown", (e) => {
+        console.log("tes")
+        if (e.key == "ArrowUp"){sendData(1)}
+        else if (e.key == "ArrowLeft"){sendData(3)}
+        else if (e.key == "ArrowRight"){sendData(4)}
+        else if (e.key == "ArrowDown"){sendData(2)};
+            
+    }, false);
+
 
     function showHelp(){
         let help_menu = document.getElementById("help_popout");
@@ -93,7 +102,6 @@ $all = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
 
     var username = "<?php echo $_SESSION["username"]; ?>"
-    console.log( <?php echo json_encode($_SESSION); ?>)
 
     class Tank {
         constructor(tank_name, x, y, actions, health, bullet_range) {
@@ -112,10 +120,13 @@ $all = mysqli_fetch_all($result, MYSQLI_ASSOC);
     }
 
 
-    var columns = 20;
-    var rows = 20;
-
     var all_tanks_data = <?php echo json_encode($all); ?>;
+
+    //var columns = 20;
+    //var rows = 20;
+    var game_data = <?php echo file_get_contents("game-data.txt"); ?>;
+    var columns = rows = game_data["size"];
+
     var tanks = {};
     var user_tank = null;
 
@@ -132,8 +143,6 @@ $all = mysqli_fetch_all($result, MYSQLI_ASSOC);
     };
 
 
-
-    console.log(all_tanks_data)
 
     const grid = document.getElementById("grid")
     for (let y = 0; y < rows; y++) {
@@ -181,8 +190,6 @@ $all = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
             
         cell.style.fontSize = (cell.clientWidth/tank.tank_name.length).toString()+"px";
-                console.log(cell.clientWidth, tank.tank_name.length)
-                console.log(cell.style.fontSize, (cell.width/tank.tank_name.length).toString()+"px");
         }
         }
     });
