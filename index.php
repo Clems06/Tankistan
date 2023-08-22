@@ -26,6 +26,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 </head>
 <body>
     <div id="top">
+    	<a href="http://<?php echo $_SERVER['HTTP_HOST'] ;?>"><img id="home" src="static/home.png" alt="home"></img></a>
         <div class="title"><h1 id="text_title">Tankistan</h1></div>
         <a class="logout" href="setup/logout.php">Log out</a>
         <?php if (array_key_exists('game', $_REQUEST)){include "keys.php";} ?>

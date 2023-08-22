@@ -14,9 +14,19 @@ body {
     border-radius: 0px 0px 10px 10px;
     z-index: 3;
 }
+
+
 .title h1 {
-    font-size: min(2.5vw, 40px);
+    font-size: 40px;
     container-name: sidebar;
+}
+
+#home{
+    position: fixed;
+    left: 10px;
+    top:; 10px;
+    width: 30px;
+    margin: 10px;
 }
 /*.title {
     height: 20%;
