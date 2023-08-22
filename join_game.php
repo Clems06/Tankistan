@@ -39,7 +39,7 @@ $user_games = array();
 while($row = mysqli_fetch_object($result)) {
     $id = $row->game_id;
     array_push($user_games, $id);
-    echo '<a href="?game='.$id.'">'. $id .'</a>';
+    echo '<a href="?game='.urlencode($id).'">'. $id .'</a>';
 }
 
 ?>
@@ -55,7 +55,7 @@ while($row = mysqli_fetch_object($result)) {
         if (in_array($id, $user_games)){
             continue;
         };
-        echo '<a href="?game='.$id.'">'. $id . ' - ' . $owner . '</a>';
+        echo '<a href="?game='.urlencode($id).'">'. $id . ' - ' . $owner . '</a>';
     }
 
 ?>
