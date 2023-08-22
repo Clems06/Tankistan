@@ -7,9 +7,7 @@ body {
 }
 
 #top {
-    position: fixed;
     width: 100%;
-    height: 25%;
     text-align: center;
     background-color: lightblue;
     padding-bottom: 15px;
@@ -59,7 +57,7 @@ body {
 }
 
 .ctrl_button {
-    height: 100%;
+    height: 40px;
     aspect-ratio: 1 / 1;
 }
 
@@ -72,19 +70,19 @@ body {
 
 
 #battlefield {
-    background-color: #74992e;
+    background-color: #595959;
     display: inline-block;
     border: 5px solid black;
     margin-bottom: 10px;
     width: 800px;
-    position: absolute;
+    position: fixed;
     /*top: 30%;*/
     z-index: 1;
 }
 
 #grid {
     display: grid;
-    grid-gap: 5px;
+    grid-gap: 3px;
 }
 
 .cell {
@@ -99,15 +97,23 @@ body {
     font-weight: bold;
     background: white;
     aspect-ratio: 1 / 1;
+
+    background-repeat: no-repeat;
+    background-size: contain;
     /*font-size: 2vw;*/
 }
 
 
-#popup-bubble{
-    position: absolute;
+#popout-bubble{
+    position: fixed;
     top: 200px;
     left: 400px;
     z-index: 2;
+    text-align: center;
+}
+
+#selected-name{
+    margin: 5px;
 }
 
 #help{
@@ -135,4 +141,63 @@ body {
     /*background-color: rgba(255, 255, 255, 0.8);*/
     background-color: rgba(111, 212, 252, 0.5);
     visibility: hidden;
+}
+
+.move {
+  animation: move 1s linear 1;
+}
+
+@keyframes move {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  100% {
+    transform: translate(var(--dx), var(--dy));
+  }
+}
+
+
+#bulletbox{
+    position: absolute;
+    /*top: 400px;
+    left: 200px;*/
+    z-index: 1;
+}
+
+#bullet {
+    background-image: url("../static/bullet.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 50px;
+    height: 50px;
+
+}    
+
+.animatedbox {
+    /* Some layout code… */
+    animation: bulletxAxis 2.5s ease-in;
+}
+
+
+.animated {
+  /* Render dot */
+    animation: bulletyAxis 2.5s ease-out;
+}
+    
+
+@keyframes bulletxAxis {
+  100% {
+    animation-timing-function: ease-in;
+    transform: translateX(var(--dx));
+
+  }
+}
+
+@keyframes bulletyAxis {
+  100% {
+    animation-timing-function: ease-out;
+    /*transform: rotate(90deg) translateY(-300px);*/
+    transform: translateY(var(--dy)) rotate(90deg);
+    /*transform: translateY(-300px); */
+  }
 }

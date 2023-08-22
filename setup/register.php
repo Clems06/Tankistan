@@ -1,6 +1,6 @@
 
 <?php 
-require_once "config.php";
+require_once "../config.php";
 
 function add_tank_to_db($sql_link, $tank_name) {
     $sql = "INSERT INTO tanks (name, x, y, actions, health) VALUES (?, ?, ?, ?, ?)";

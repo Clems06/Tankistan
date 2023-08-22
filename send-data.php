@@ -6,34 +6,42 @@ require_once "config.php";
 $user = $_SESSION["username"];
 
 $id = trim($_POST["id"]);
+$game_id = trim($_POST["game"]);
 
-function get_tank_data($sql_link, $tank_name)
+function get_tank_data($sql_link, $tank_name, $game_name)
 {
-    $sql = "SELECT actions, x, y, bullet_range FROM tanks WHERE name = ?;";
-    $actions = $x = $y = $range = "";
+    $sql = "SELECT * FROM tanks WHERE name = ? AND game_id = ?;";
+    $actions = $x = $y = $range = $name = "";
 
     if($stmt = mysqli_prepare($sql_link, $sql)){
-        mysqli_stmt_bind_param($stmt, "s", $param_username);
+        mysqli_stmt_bind_param($stmt, "ss", $param_username, $param_game);
         $param_username = $tank_name;
+        $param_game = $game_name;
     
         if(mysqli_stmt_execute($stmt)){
 
-            mysqli_stmt_store_result($stmt);
+            $result = mysqli_stmt_get_result($stmt);
             
-            if(mysqli_stmt_num_rows($stmt) == 1){                    
+            if(mysqli_num_rows($result) == 1){      
 
-                mysqli_stmt_bind_result($stmt, $actions, $x, $y, $range);
-                mysqli_stmt_fetch($stmt);
-                return [$actions, $x, $y, $range];
+                $row = mysqli_fetch_assoc($result);       
+
+                return $row;
                 //if(mysqli_stmt_fetch($stmt)){
             }
         }
     }
 };
 
-[$actions, $x, $y, $range] = get_tank_data($link, $user);
+$tank = get_tank_data($link, $user, $game_id);
 
-if ($actions == 0 or $x<0 or $y<0){
+
+$name = $tank["name"];
+$x = $tank["x"];
+$y = $tank["y"];
+$range = $tank["bullet_range"];
+
+if ($tank["actions"] == 0 or $x<0 or $y<0){
     exit("Not allowed");
 };
 
@@ -79,8 +87,11 @@ if ($id <= 4){
     }
 
 } elseif ($id==5 or $id==6) {
-    $other = $_POST["other"];
-    [$other_actions, $other_x, $other_y, $other_range] = get_tank_data($link, $other);
+    $other_name = $_POST["other"];
+
+    $other = get_tank_data($link, $other_name, $game_id);
+    $other_x = $other["x"];
+    $other_y = $other["y"];
 
     if ($other_x - $x > $range or $other_y - $y > $range){
         exit("Not allowed");
@@ -97,17 +108,27 @@ mysqli_stmt_execute($stmt);
 
 if ($id == 5 or $id == 6){
     if ($id==5){
-        $sql = "UPDATE tanks SET health = health - 1 WHERE name = ?;";
+        if ($other["health"] == 1){
+            $sql = "UPDATE tanks SET health = 0, x = -2, y = -2 WHERE name = ?;";
+        } else {
+            $sql = "UPDATE tanks SET health = health - 1 WHERE name = ?;";
+        }
     } elseif ($id==6) {
         $sql = "UPDATE tanks SET actions = actions + 1 WHERE name = ?;";
     }
 
     $stmt = mysqli_prepare($link, $sql);
     mysqli_stmt_bind_param($stmt, "s", $param_username);
-    $param_username = $other;
+    $param_username = $other_name;
     mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
 }
 
+$sql = "INSERT INTO logs (author, action_id, other, game_id) VALUES (?, ?, ?, ?);";
+$stmt = mysqli_prepare($link, $sql);
+mysqli_stmt_bind_param($stmt, "ssss", $user, $id, $other_name, $game_id);
+mysqli_stmt_execute($stmt);
+mysqli_stmt_close($stmt);
 
 /*
 if($stmt = mysqli_prepare($link, $sql)){
