@@ -3,7 +3,7 @@
 $all_tanks = mysqli_query($link, "SELECT * FROM tanks WHERE game_id='". $_REQUEST['game'] ."' ORDER BY RAND();");
 $total_num = mysqli_num_rows($all_tanks);
 
-$side = ceil(sqrt($total_num * 25 + 50));
+$side = ceil(sqrt($total_num * 25 + 100));
 if ($side % 2 == 0){
 	$side += 1;
 }
