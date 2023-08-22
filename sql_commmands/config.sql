@@ -1,6 +1,6 @@
 -- CREATE DATABASE IF NOT EXISTS tank_data;
--- USE tank_data;
-USE bd_tankistan;
+USE tank_data;
+-- USE bd_tankistan;
 CREATE TABLE IF NOT EXISTS users
 (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -25,7 +25,8 @@ CREATE TABLE IF NOT EXISTS games
     name VARCHAR(100),
     size INT DEFAULT 0,
     owner VARCHAR(100),
-    started BOOL DEFAULT FALSE
+    started BOOL DEFAULT FALSE,
+    public BOOL DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS logs
