@@ -1,7 +1,7 @@
 <?php 
 
 require "get-logs.php";
-$splitted = explode("<br>", $result);
+$splitted = explode("<br>", $string_logs);
 $last_update = sizeof($splitted)-2;
 
 
@@ -577,7 +577,7 @@ $all = mysqli_fetch_all($result, MYSQLI_ASSOC);
         xhr.onreadystatechange = function() {
 
             if (this.readyState == 4 && this.status == 200) {
-               
+               console.log()
                 let splitted = this.responseText.split("<br>");
                 console.log(last_update+1);
                 let missed = splitted.slice(last_update+1, -1);
