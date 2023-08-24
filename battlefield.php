@@ -577,11 +577,8 @@ $all = mysqli_fetch_all($result, MYSQLI_ASSOC);
         xhr.onreadystatechange = function() {
 
             if (this.readyState == 4 && this.status == 200) {
-               console.log()
                 let splitted = this.responseText.split("<br>");
-                console.log(last_update+1);
                 let missed = splitted.slice(last_update+1, -1);
-                console.log(this.responseText, splitted, missed);
                 for (var i = 0; i < missed.length; i++) {
                     if (missed[i].split(" ")[0]==user_tank.tank_name){continue;}
                     make_action(...missed[i].split(" "));
