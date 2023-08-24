@@ -1,28 +1,37 @@
 <?php
 require 'config.php';
 
+$sql = "SELECT * FROM logs WHERE game_id=?;";
+$stmt = mysqli_prepare($link, $sql);
+mysqli_stmt_bind_param($stmt, "s", $param_game);
+
 if($_SERVER["REQUEST_METHOD"] == "POST"){
-	$game_logs = mysqli_query($link, "SELECT * FROM logs WHERE game_id='". $_POST['game'] ."';");
+	$param_game = $_POST['game'];
 } else {
-	$game_logs = mysqli_query($link, "SELECT * FROM logs WHERE game_id='". $_REQUEST['game'] ."';");
+	$param_game = $_REQUEST['game'];
 }
+
+    
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+
 	
-$result = "";
-while($row = mysqli_fetch_object($game_logs)) {
+$string_logs = "";
+while($row = mysqli_fetch_object($result)) {
 	$author = $row->author;
     $action = $row->action_id;
     $other = $row->other;
 	
-    $result = $result . $author . " " . strval($action);
+    $string_logs = $string_logs . $author . " " . strval($action);
     if ($other){
-    	$result = $result . " " . $other;
+    	$string_logs = $string_logs . " " . $other;
     }
-    $result = $result . "<br>";
+    $string_logs = $string_logs . "<br>";
 
 }
 
 if($_SERVER["REQUEST_METHOD"] == "POST"){
-	echo $result;
+	echo $string_logs;
 }
 
 ?>
