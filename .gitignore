@@ -403,3 +403,4 @@ database.env
 <<<<<<< HEAD
 /secret/
 /secret
+mysql_init.sql
