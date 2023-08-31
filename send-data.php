@@ -73,9 +73,9 @@ if ($id <= 4){
         $new_y = $y;
     }
 
-    $check_if_empty = "SELECT id FROM tanks WHERE x = ? AND y = ?;";
+    $check_if_empty = "SELECT id FROM tanks WHERE x = ? AND y = ? AND game_id=?;";
     if($stmt = mysqli_prepare($link, $check_if_empty)){
-        mysqli_stmt_bind_param($stmt, "ss", $new_x, $new_y);
+        mysqli_stmt_bind_param($stmt, "sss", $new_x, $new_y, $game_id);
         if(mysqli_stmt_execute($stmt)){
 
             mysqli_stmt_store_result($stmt);
@@ -85,6 +85,22 @@ if ($id <= 4){
             }
         }
     }
+
+    $check_map = "SELECT map, size FROM games WHERE name=?;";
+    if($stmt = mysqli_prepare($link, $check_map)){
+        mysqli_stmt_bind_param($stmt, "s", $game_id);
+        mysqli_stmt_execute($stmt);
+
+        $result = mysqli_stmt_get_result($stmt);
+        $row = mysqli_fetch_row($result);
+        [$map, $size] = $row;
+        $map_cell = $map[$new_x+$size*$new_y];
+        if ($map_cell=="W" Or $map_cell=="R"){
+            exit("Not allowed");
+        }
+            
+    }
+
 
 } elseif ($id==5 or $id==6) {
     $other_name = $_POST["other"];
@@ -130,6 +146,8 @@ mysqli_stmt_bind_param($stmt, "ssss", $user, $id, $other_name, $game_id);
 mysqli_stmt_execute($stmt);
 mysqli_stmt_close($stmt);
 
+require 'get-map.php';
+echo json_encode($visible);
 /*
 if($stmt = mysqli_prepare($link, $sql)){
     $new_x = trim($_POST["new_x"]);

@@ -1,5 +1,10 @@
 <?php
 
+if (!(defined('index_check')) And index_check){
+    exit();
+}
+
+
 $all_tanks = mysqli_query($link, "SELECT * FROM tanks WHERE game_id='". $_REQUEST['game'] ."' ORDER BY RAND();");
 $total_num = mysqli_num_rows($all_tanks);
 
@@ -11,7 +16,7 @@ $middle = intval(($side - 1)/2);
 $radius = intval($side/4);
 $rotation = 2*pi()/$total_num;
 
-mysqli_query($link, "UPDATE games SET started=TRUE, size=". strval($side) . " WHERE name='". $_REQUEST['game'] ."';");
+mysqli_query($link, "UPDATE games SET started=TRUE, size=". strval($side) . ", map=". str_repeat("E", $side**2) ." WHERE name='". $_REQUEST['game'] ."';");
 
 $i = 0;
 while($row = mysqli_fetch_object($all_tanks)) {

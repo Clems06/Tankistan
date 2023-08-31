@@ -1,7 +1,7 @@
 <?php
 require_once "config.php";
 
-$index_start = 1;
+define("index_check", true);
 
 // Initialize the session
 session_start();
