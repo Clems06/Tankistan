@@ -2,23 +2,6 @@
 <?php 
 require_once "../config.php";
 
-function add_tank_to_db($sql_link, $tank_name) {
-    $sql = "INSERT INTO tanks (name, x, y, actions, health) VALUES (?, ?, ?, ?, ?)";
-         
-    if($stmt = mysqli_prepare($sql_link, $sql)){
-        // Bind variables to the prepared statement as parameters
-        $xy = -2;
-        $health = 3;
-        $actions = 3;
-        mysqli_stmt_bind_param($stmt, "sssss", $tank_name, $xy, $xy, $actions, $health);
-        
-        // Attempt to execute the prepared statement
-        if(!mysqli_stmt_execute($stmt)){
-            echo "Oops! Something went wrong. Please try again later.";
-        }
-    }
-}
-
 // Define variables and initialize with empty values
 $username = $password = $confirm_password = "";
 $username_err = $password_err = $confirm_password_err = "";
@@ -96,7 +79,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             
             // Attempt to execute the prepared statement
             if(mysqli_stmt_execute($stmt)){
-                add_tank_to_db($link, $username);
 
                 // Redirect to login page
                 header("location: login.php");
