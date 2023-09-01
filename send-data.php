@@ -56,19 +56,19 @@ Ids:
 */
 if ($id <= 4){
     if ($id==1){
-        $sql = "UPDATE tanks SET actions = actions - 1, y = y - 1 WHERE name = ?;";
+        $sql = "UPDATE tanks SET actions = actions - 1, y = y - 1 WHERE name = ? AND game_id=?;";
         $new_x = $x;
         $new_y = $y - 1;
     } elseif ($id==2) {
-        $sql = "UPDATE tanks SET actions = actions - 1, y = y + 1 WHERE name = ?;";
+        $sql = "UPDATE tanks SET actions = actions - 1, y = y + 1 WHERE name = ? AND game_id=?;";
         $new_x = $x;
         $new_y = $y + 1;
     } elseif ($id==3) {
-        $sql = "UPDATE tanks SET actions = actions - 1, x = x - 1 WHERE name = ?;";
+        $sql = "UPDATE tanks SET actions = actions - 1, x = x - 1 WHERE name = ? AND game_id=?;";
         $new_x = $x - 1;
         $new_y = $y;
     } elseif ($id==4) {
-        $sql = "UPDATE tanks SET actions = actions - 1, x = x + 1 WHERE name = ?;";
+        $sql = "UPDATE tanks SET actions = actions - 1, x = x + 1 WHERE name = ? AND game_id=?;";
         $new_x = $x + 1;
         $new_y = $y;
     }
@@ -83,6 +83,7 @@ if ($id <= 4){
             if(mysqli_stmt_num_rows($stmt) > 0){                    
                 exit("Not allowed");
             }
+            mysqli_stmt_close($stmt);
         }
     }
 
@@ -98,6 +99,7 @@ if ($id <= 4){
         if ($map_cell=="W" Or $map_cell=="R"){
             exit("Not allowed");
         }
+        mysqli_stmt_close($stmt);
             
     }
 
@@ -113,28 +115,28 @@ if ($id <= 4){
         exit("Not allowed");
     };
 
-    $sql = "UPDATE tanks SET actions = actions - 1 WHERE name = ?;";
+    $sql = "UPDATE tanks SET actions = actions - 1 WHERE name = ? AND game_id=?;";
 };
 
 $stmt = mysqli_prepare($link, $sql);
-mysqli_stmt_bind_param($stmt, "s", $param_username);
+mysqli_stmt_bind_param($stmt, "ss", $param_username, $game_id);
 $param_username = $user;
 mysqli_stmt_execute($stmt);
-
+mysqli_stmt_close($stmt);
 
 if ($id == 5 or $id == 6){
     if ($id==5){
         if ($other["health"] == 1){
-            $sql = "UPDATE tanks SET health = 0, x = -2, y = -2 WHERE name = ?;";
+            $sql = "UPDATE tanks SET health = 0, x = -2, y = -2 WHERE name = ? AND game_id=?;";
         } else {
-            $sql = "UPDATE tanks SET health = health - 1 WHERE name = ?;";
+            $sql = "UPDATE tanks SET health = health - 1 WHERE name = ? AND game_id=?;";
         }
     } elseif ($id==6) {
-        $sql = "UPDATE tanks SET actions = actions + 1 WHERE name = ?;";
+        $sql = "UPDATE tanks SET actions = actions + 1 WHERE name = ? AND game_id=?;";
     }
 
     $stmt = mysqli_prepare($link, $sql);
-    mysqli_stmt_bind_param($stmt, "s", $param_username);
+    mysqli_stmt_bind_param($stmt, "ss", $param_username, $game_id);
     $param_username = $other_name;
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
