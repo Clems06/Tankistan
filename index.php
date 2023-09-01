@@ -32,7 +32,7 @@ if (array_key_exists('delete_game', $_REQUEST)){
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
 
-    $sql = "DELETE FROM tanks WHERE game_id=?;";
+    $sql = "DELETE FROM games WHERE name=?;";
     $stmt = mysqli_prepare($link, $sql);
     mysqli_stmt_bind_param($stmt, "s", $param_game);
     $param_game = $_REQUEST['delete_game'];
