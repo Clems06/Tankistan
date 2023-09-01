@@ -39,6 +39,9 @@ $user_games = array();
 while($row = mysqli_fetch_object($result)) {
     $id = $row->game_id;
     array_push($user_games, $id);
+    if (!$id){
+        continue;
+    }
     echo '<a href="?game='.urlencode($id).'">'. $id .'</a>';
 }
 
@@ -52,7 +55,7 @@ while($row = mysqli_fetch_object($result)) {
     while($row = mysqli_fetch_object($public_games)) {
         $id = $row->name;
         $owner = $row->owner;
-        if (in_array($id, $user_games)){
+        if (!$id Or in_array($id, $user_games)){
             continue;
         };
         echo '<a href="?game='.urlencode($id).'">'. $id . ' - ' . $owner . '</a>';

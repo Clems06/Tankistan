@@ -1,21 +1,14 @@
 <?php 
 
+if (!(defined('index_check')) And index_check){
+    exit();
+}
+
 require "get-logs.php";
 $splitted = explode("<br>", $string_logs);
 $last_update = sizeof($splitted)-2;
 
-
-$sql = "SELECT * FROM tanks WHERE game_id=?;";
-        
-$stmt = mysqli_prepare($link, $sql);
-mysqli_stmt_bind_param($stmt, "s", $param_game);
-$param_game = $_REQUEST['game'];
-    
-mysqli_stmt_execute($stmt);
-
-$result = mysqli_stmt_get_result($stmt);
-
-$all = mysqli_fetch_all($result, MYSQLI_ASSOC);
+require "get-map.php";
 ?>
 
 
@@ -48,7 +41,6 @@ $all = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
     function showHelp(){
         let help_menu = document.getElementById("help_popout");
-        console.log(help_menu.style.visibility)
         if (!help_menu.style.visibility || help_menu.style.visibility == "hidden"){
             help_menu.style.visibility = "visible";
         } else {
@@ -76,62 +68,132 @@ $all = mysqli_fetch_all($result, MYSQLI_ASSOC);
     }
 
 
-    var all_tanks_data = <?php echo json_encode($all); ?>;
+    var all_tanks_data = <?php echo json_encode($visible); ?>;
 
     //var columns = 20;
     //var rows = 20;
     var columns = rows = <?php echo $game["size"]; ?>;
+    var map = "<?php echo $game["map"]; ?>";
 
     var tanks = {};
     var user_tank = null;
 
     var cell_popup_data = null;
 
-    for (let i = 0; i < all_tanks_data.length; i++) {
-        let tank_data = all_tanks_data[i]
-        
-        let tank = new Tank(tank_data["name"], parseInt(tank_data["x"]), parseInt(tank_data["y"]), parseInt(tank_data["actions"]), parseInt(tank_data["health"]), parseInt(tank_data["bullet_range"]));
-        tanks[textCoords(tank.x, tank.y)] = tank;
-        if (tank.tank_name == username){
-            user_tank = tank;
+
+    function process_tanks(){
+        tanks = {};
+        for (let i = 0; i < all_tanks_data.length; i++) {
+            let tank_data = all_tanks_data[i];
+            
+            let tank = new Tank(tank_data["name"], parseInt(tank_data["x"]), parseInt(tank_data["y"]), parseInt(tank_data["actions"]), parseInt(tank_data["health"]), parseInt(tank_data["bullet_range"]));
+            tanks[textCoords(tank.x, tank.y)] = tank;
+            if (tank.tank_name == username){
+                user_tank = tank;
+            };
         };
-    };
+    }
+    process_tanks();
 
 
 
     const grid = document.getElementById("grid");
+
+    function map_cell(x, y){
+        return map[x + y*columns];
+    }
+
+    function check_if_visible(target_x, target_y, player_x, player_y)
+    {
+        let x0 = player_x;
+        let y0 = player_y;
+        let x1 = target_x;
+        let y1 = target_y;
+
+        let dx = Math.abs(x1 - x0);
+        let sx;
+        if (x0 < x1){
+            sx = 1;
+        } else{
+            sx = -1;
+        }
+
+        let dy = -Math.abs(y1 - y0);
+        let sy;
+        if (y0 < y1){
+            sy = 1;
+        } else{
+            sy = -1;
+        }
+
+        let e = dx + dy;
+        let e2;
+
+        while (x0 != x1 || y0 != y1) {
+            e2 = 2*e;
+            if (e2 >= dy){
+                //echo "test1";
+                if (x0 == x1){
+                    //echo "broke1";
+                    break;
+                }
+                e = e + dy;
+                x0 = x0 + sx;
+            }
+            if (e2 <= dx){
+                //echo "test2";
+                if (y0 == y1){
+                    //echo "broke2";
+                    break;
+                }
+                e = e + dx;
+                y0 = y0 + sy;
+            }
+
+            if (map_cell(x0, y0)=="W"){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function paint_cell_tank(cell, tank){
+        cell.innerHTML =String.fromCodePoint(0x2764).repeat(tank.health) + "<br>" +tank.actions.toString() + "x" + String.fromCodePoint(0x27BC);
+                    
+        if (tank.tank_name == user_tank.tank_name){
+            cell.style.backgroundColor = "rgba(50, 168, 105, 1)";
+            //cell.style.backgroundImage = 'url("../static/good.png")';
+        }  else {
+            cell.onclick = function(){update_popup(tank, cell)}
+            cell.style.backgroundColor = "rgba(168, 50, 80, 1)";
+        };
+    };
 
     function paint_grid(){
         grid.innerHTML = "";
 
         for (let y = 0; y < rows; y++) {
             for (let x = 0; x < columns; x++) {
+
                 let cell = document.createElement("div");
                 cell.className = "cell";
                 cell.id = textCoords(x, y);
                 let tank = tanks[cell.id];
+                let obstacle = map_cell(x, y);
+                let visible = check_if_visible(x, y, user_tank.x, user_tank.y);
                 if (tank && tank.health){
-                    
-                    //cell.innerHTML = String.fromCodePoint(0x2764).repeat(tank.health) + "<br>" + tank.tank_name + "<br>" + tank.actions.toString() + "x" + String.fromCodePoint(0x27BC);
-                    cell.innerHTML =String.fromCodePoint(0x2764).repeat(tank.health) + "<br>" +tank.actions.toString() + "x" + String.fromCodePoint(0x27BC);
-                    
-                    //
-                    //cell.onclick= function(){console.log("test")};
-                    //cell.onclick= function(){attack(tank)}
-                    if (tank.tank_name == user_tank.tank_name){
-                        cell.style.backgroundColor = "rgba(50, 168, 105, 1)";
-                        //cell.style.backgroundImage = 'url("../static/good.png")';
-                    }  else {
-                        cell.onclick = function(){update_popup(tank, cell)}
-                        cell.style.backgroundColor = "rgba(168, 50, 80, 1)";
-                    };
-                } else if (user_tank.x>=0 && Math.abs(x-user_tank.x) <= user_tank.bullet_range && Math.abs(y-user_tank.y) <= user_tank.bullet_range){
+                    paint_cell_tank(cell, tank);
+                } else if (obstacle == "W"){
+                    cell.style.backgroundColor = "rgba(79, 79, 79, 1)";
+                } else if (obstacle == "R"){
+                    cell.style.backgroundColor = "rgba(3, 111, 252, 1)";
+                } else if (visible && user_tank.x>=0 && Math.abs(x-user_tank.x) <= user_tank.bullet_range && Math.abs(y-user_tank.y) <= user_tank.bullet_range){
                     cell.style.backgroundColor = "rgba(88, 203, 231, 1)";
-                } /*else if (user_tank.x>=0 && Math.abs(x-user_tank.x) <= 2 && Math.abs(y-user_tank.y) <= 2){
-                    cell.style.backgroundColor = "rgba(43, 93, 105, 1)";
+                } 
 
-                } */
-                
+                if (!visible && obstacle != "W"){
+                    cell.style.opacity = "0.1";
+                }     
 
                 grid.appendChild(cell);
             }
@@ -167,6 +229,29 @@ $all = mysqli_fetch_all($result, MYSQLI_ASSOC);
                 if (this.responseText != "Not allowed"){
                     //location.reload();
                     make_action(user_tank.tank_name, id, other);
+                    
+                    if (id<=4){
+                        let new_tanks_data = JSON.parse(this.responseText);
+                        /*for (let i in new_tanks_data) {
+                            let tank = new_tanks_data[i];
+
+                            if (tank["name"] == username){
+                                continue;
+                            }
+
+                            console.log(tank);
+                            let object = new Tank(tank["name"], parseInt(tank["x"]), parseInt(tank["y"]), parseInt(tank["actions"]), parseInt(tank["health"]), parseInt(tank["bullet_range"]));
+                            let coords = textCoords(object.x, object.y);
+                            console.log(coords);
+                            if (!all_tanks_data[coords]){
+                                let cell = document.getElementById(coords);
+                                paint_cell_tank(cell, object);
+                            }
+                        }*/
+                        globalThis.all_tanks_data = new_tanks_data;
+                        console.log(all_tanks_data);
+                        process_tanks();
+                    }
                 }
             }
         };
@@ -408,33 +493,32 @@ $all = mysqli_fetch_all($result, MYSQLI_ASSOC);
     }
 
     document.addEventListener("wheel", function(e) {  
-        if(event.ctrlKey == true)
-        {
-            e.preventDefault();
-            let mouse_x = e.clientX;
-            let mouse_y = e.clientY;
-            
-            if(e.deltaY > 0){    
-                zoom_on_point(mouse_x, mouse_y, ZOOM_SPEED2);
-                //zoomElement.style.top = (zoomElement.getBoundingClientRect().top/ZOOM_SPEED2).toString()+"px";
+        //if(event.ctrlKey == true)
+        
+        e.preventDefault();
+        let mouse_x = e.clientX;
+        let mouse_y = e.clientY;
+        
+        if(e.deltaY > 0){    
+            zoom_on_point(mouse_x, mouse_y, ZOOM_SPEED2);
+            //zoomElement.style.top = (zoomElement.getBoundingClientRect().top/ZOOM_SPEED2).toString()+"px";
 
-            }else{    
-                zoom_on_point(mouse_x, mouse_y, 1/ZOOM_SPEED2);
-                //zoomElement.style.top = (zoomElement.getBoundingClientRect().top*ZOOM_SPEED2).toString()+"px";
-            }
-
-
-            
-            adjust_grid(grid);
-            update_popup_pos();
+        }else{    
+            zoom_on_point(mouse_x, mouse_y, 1/ZOOM_SPEED2);
+            //zoomElement.style.top = (zoomElement.getBoundingClientRect().top*ZOOM_SPEED2).toString()+"px";
         }
+
+
+        
+        adjust_grid(grid);
+        update_popup_pos();
     }, {passive: false});
 </script>
 <script>
     var last_update = <?php echo $last_update?>;
 
     function tank_by_name(name){
-        let tank_values = Object.values(tanks)
+        let tank_values = Object.values(tanks);
         for (var i = 0; i < tank_values.length; i++) {
             if (tank_values[i].tank_name == name){
                 return tank_values[i];
@@ -486,17 +570,6 @@ $all = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
 
             old_cell.addEventListener('animationend', function() {
-                /*old_cell.classList.remove('move');
-
-
-                new_cell.innerHTML = old_cell.innerHTML;
-                old_cell.innerHTML = "";
-
-                new_cell.style = old_cell.style;
-                old_cell.style = "";*/
-
-                
-
                 paint_grid();
             });
             old_cell.classList.add('move');

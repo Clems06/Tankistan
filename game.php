@@ -1,4 +1,10 @@
 <?php
+
+if (!(defined('index_check')) And index_check){
+    exit();
+}
+
+
 $sql = "SELECT * FROM games WHERE name=?;";
         
 if($stmt = mysqli_prepare($link, $sql)){
