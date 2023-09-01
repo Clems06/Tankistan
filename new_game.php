@@ -20,17 +20,23 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     	} else {
     		mysqli_stmt_close($stmt);
 
-    		$sql = "INSERT INTO games (name, owner, public) VALUES (?, ?, ?);";
+    		$sql = "INSERT INTO games (name, owner, public, random_map) VALUES (?, ?, ?, ?);";
         
 			$stmt = mysqli_prepare($link, $sql);
-	    	mysqli_stmt_bind_param($stmt, "sss", $param_game, $username, $is_public);
+	    	mysqli_stmt_bind_param($stmt, "ssss", $param_game, $username, $is_public, $is_random);
 			$param_game = $_POST["gamename"];
 			$username = $_SESSION["username"];
 			if (isset($_POST['public'])){
-				$is_public = true;
+				$is_public = 1;
 			} else {
-				$is_public = false;
+				$is_public = 0;
 			}
+			if ($_POST['map']=="random"){
+				$is_random = 1;
+			} else {
+				$is_random = 0;
+			}
+
 			mysqli_stmt_execute($stmt);
 			mysqli_stmt_close($stmt);
 
@@ -122,6 +128,13 @@ input:checked + .slider:before {
   				<span class="slider round"></span>
 			</label>
         </div>
+		<div class="form-group">
+	        <label>Map:</label>
+	        <select id="map" name="map">
+				<option value="empty">Empty</option>
+				<option value="random">Random</option>
+			</select>
+	    </div>
 	    <div class="form-group">
 	        <input type="submit" class="btn btn-primary" value="Create game">
 	    </div>
