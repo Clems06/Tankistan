@@ -1,6 +1,4 @@
 <?php
-require_once "config.php";
-
 define("index_check", true);
 
 // Initialize the session
@@ -11,6 +9,39 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: setup/login.php");
     exit;
 }
+
+require_once "config.php";
+
+if (array_key_exists('delete_game', $_REQUEST)){
+       
+    $sql = "SELECT * FROM games WHERE name=? AND owner=?;";
+    $stmt = mysqli_prepare($link, $sql);
+    mysqli_stmt_bind_param($stmt, "ss", $param_game, $_SESSION["username"]);
+    $param_game = $_REQUEST['game'];
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if(!mysqli_num_rows($result)){
+       header("location: ?");
+    }
+    mysqli_stmt_close($stmt);
+
+    $sql = "DELETE FROM tanks WHERE game_id=?;";
+    $stmt = mysqli_prepare($link, $sql);
+    mysqli_stmt_bind_param($stmt, "s", $param_game);
+    $param_game = $_REQUEST['delete_game'];
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+
+    $sql = "DELETE FROM tanks WHERE game_id=?;";
+    $stmt = mysqli_prepare($link, $sql);
+    mysqli_stmt_bind_param($stmt, "s", $param_game);
+    $param_game = $_REQUEST['delete_game'];
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+
+    header("location: ?");
+}
+
 
 ?>
 

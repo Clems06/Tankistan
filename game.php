@@ -27,6 +27,16 @@ if($stmt = mysqli_prepare($link, $sql)){
 $game = mysqli_fetch_assoc($result);
 mysqli_stmt_close($stmt);
 
+if ($game["owner"] == $_SESSION["username"]){
+	echo '<script type="text/javascript">
+			var a = document.createElement("a"); 
+            var link = document.createTextNode("Delete game");
+            a.appendChild(link);
+            a.href = "?delete_game="+encodeURIComponent("'. $game["name"] .'"); 
+			document.getElementById("top").appendChild(a);
+		</script>';
+}
+
 if ($game["started"]){
 	$battlefield_size = $game["size"];
 	require 'battlefield.php';
