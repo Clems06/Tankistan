@@ -37,8 +37,7 @@ mysqli_stmt_fetch($stmt);
 
 $sql = "UPDATE games SET started=TRUE, size=?, map=? WHERE name=?;";
 $stmt = mysqli_prepare($link, $sql);
-mysqli_stmt_bind_param($stmt, "sss", $side, $map, $param_game);
-$param_game = $_REQUEST['game'];
+mysqli_stmt_bind_param($stmt, "sss", $side, $map, $_REQUEST['game']);
 if ($random_map){
     $map = random_map($side, $total_num, $rotation, $middle, $radius);
 } else {
@@ -49,13 +48,13 @@ mysqli_stmt_execute($stmt);
 
 $i = 0;
 while($row = mysqli_fetch_object($all_tanks)) {
-	$sql = "UPDATE tanks SET x=?, y=? WHERE name=?;";
+	$sql = "UPDATE tanks SET x=?, y=? WHERE name=? AND game_id=?;";
 	$tank_name = $row->name;
 	$x = $middle + intval(cos($i*$rotation) * $radius);
 	$y = $middle + intval(sin($i*$rotation) * $radius);
 
 	if($stmt = mysqli_prepare($link, $sql)){
-        mysqli_stmt_bind_param($stmt, "sss", $x, $y, $tank_name);
+        mysqli_stmt_bind_param($stmt, "ssss", $x, $y, $tank_name, $_REQUEST['game']);
     
         if(mysqli_stmt_execute($stmt)){
         	echo "<br>Succesfully added " . $tank_name . "to pos: " . strval($x) . ", " . strval($y);
