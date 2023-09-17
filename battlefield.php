@@ -11,7 +11,22 @@ $last_update = sizeof($splitted)-2;
 require "get-map.php";
 ?>
 
-
+<style type="text/css">
+    .river{
+        background-color: rgba(3, 111, 252, 1);
+    }
+    .mountain{
+        background-color: rgba(79, 79, 79, 1);
+        background-image: url("../static/mountain.png");
+        background-position: center;
+    }
+    .target{
+        background-image: url("../static/target.png");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 70%;
+    }
+</style>
 
 <div id="battlefield">
         <div id="grid"></div>
@@ -183,12 +198,15 @@ require "get-map.php";
                 let visible = check_if_visible(x, y, user_tank.x, user_tank.y);
                 if (tank && tank.health){
                     paint_cell_tank(cell, tank);
+                    //cell.classList.add("target");
                 } else if (obstacle == "W"){
-                    cell.style.backgroundColor = "rgba(79, 79, 79, 1)";
+                    cell.classList.add("mountain");
                 } else if (obstacle == "R"){
-                    cell.style.backgroundColor = "rgba(3, 111, 252, 1)";
-                } else if (visible && user_tank.x>=0 && Math.abs(x-user_tank.x) <= user_tank.bullet_range && Math.abs(y-user_tank.y) <= user_tank.bullet_range){
-                    cell.style.backgroundColor = "rgba(88, 203, 231, 1)";
+                    cell.classList.add("river");
+                }
+                
+                if (visible && user_tank.x>=0 && Math.abs(x-user_tank.x) <= user_tank.bullet_range && Math.abs(y-user_tank.y) <= user_tank.bullet_range && obstacle=="E" && !(tank && tank.tank_name==user_tank.tank_name)){
+                    cell.classList.add("target");
                 } 
 
                 if (!visible && obstacle != "W"){
