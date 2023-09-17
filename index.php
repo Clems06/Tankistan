@@ -6,7 +6,9 @@ session_start();
  
 // Check if the user is logged in, if not then redirect him to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
-    header("location: setup/login.php");
+	$link = 'https://'.$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
+	$url_components = parse_url($link);
+    header("location: setup/login.php?redirect_uri=".$url_components["query"]);
     exit;
 }
 
