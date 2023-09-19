@@ -1,4 +1,7 @@
 <?php 
+$visible = [];
+
+
 
 $sql = "SELECT * FROM tanks WHERE game_id=?;";
         
@@ -18,9 +21,8 @@ mysqli_stmt_close($stmt);
 $sql = "SELECT map, size FROM games WHERE name=?;";
         
 $stmt = mysqli_prepare($link, $sql);
-mysqli_stmt_bind_param($stmt, "s", $param_game);
-$param_game = $_REQUEST['game'];
-    
+mysqli_stmt_bind_param($stmt, "s", $_REQUEST['game']);
+
 mysqli_stmt_execute($stmt);
 mysqli_stmt_store_result($stmt);
 
@@ -34,11 +36,10 @@ $size = intval($size);
 mysqli_stmt_close($stmt);
 
 
-$sql = "SELECT x, y FROM tanks WHERE name=?;";
+$sql = "SELECT x, y FROM tanks WHERE name=? AND game_id=?;";
         
 $stmt = mysqli_prepare($link, $sql);
-mysqli_stmt_bind_param($stmt, "s", $param_username);
-$param_username = $_SESSION['username'];
+mysqli_stmt_bind_param($stmt, "ss", $_SESSION['username'], $_REQUEST['game']);
     
 mysqli_stmt_execute($stmt);
 mysqli_stmt_store_result($stmt);
@@ -68,7 +69,7 @@ array("x"=>3, "y"=>0));
 $x = 3;
 $y = 4;*/
 
-$visible = [];
+
 
 
 /*
@@ -141,7 +142,13 @@ function check_if_visible($target_x, $target_y, $player_x, $player_y)
 }
 
 foreach ($tanks as $tank){
-	if (check_if_visible($tank["x"], $tank["y"], $x, $y)){
+	if ($x < 0){
+		if ($tank["name"] == $_SESSION['username']){
+			array_push($visible, $tank);
+			break;
+		}
+	}
+	else if (check_if_visible($tank["x"], $tank["y"], $x, $y)){
 		array_push($visible, $tank);
 	}
 }

@@ -79,48 +79,8 @@ body {
 
 
 
-#battlefield {
-    background-color: #595959;
-    display: inline-block;
-    border: 5px solid black;
-    margin-bottom: 10px;
-    width: 800px;
-    position: fixed;
-    /*top: 30%;*/
-    z-index: 1;
-}
-
-#grid {
-    display: grid;
-    grid-gap: 3px;
-}
-
-.cell {
-    /* center the cell content */
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-
-    display: flex;
-    font-family: Arial;
-    /*font-size: 3rem;*/
-    font-weight: bold;
-    background: white;
-    aspect-ratio: 1 / 1;
-
-    background-repeat: no-repeat;
-    background-size: contain;
-    /*font-size: 2vw;*/
-}
 
 
-#popout-bubble{
-    position: fixed;
-    top: 200px;
-    left: 400px;
-    z-index: 2;
-    text-align: center;
-}
 
 #selected-name{
     margin: 5px;

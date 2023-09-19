@@ -12,6 +12,61 @@ require "get-map.php";
 ?>
 
 <style type="text/css">
+    #battlefield {
+        background-color: #595959;
+        display: inline-block;
+        border: 5px solid black;
+        margin-bottom: 10px;
+        width: 800px;
+        position: fixed;
+        /*top: 30%;*/
+        z-index: 1;
+    }
+    #grid {
+        display: grid;
+        grid-gap: 3px;
+    }
+
+    .cell {
+        /* center the cell content */
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+
+        display: flex;
+        font-family: Arial;
+        /*font-size: 3rem;*/
+        font-weight: bold;
+        background: white;
+        aspect-ratio: 1 / 1;
+
+        background-repeat: no-repeat;
+        background-size: contain;
+        /*font-size: 2vw;*/
+    }
+
+
+    #popout-bubble{
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        z-index: 2;
+        text-align: center;
+    }
+
+
+    #lost{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        height: 100%;
+        width: 100%;
+        z-index: 1;
+        position: absolute;
+        font-size: 200%;
+        color: rgb(252, 3, 182);
+    }
     .river{
         background-color: rgba(3, 111, 252, 1);
     }
@@ -29,7 +84,13 @@ require "get-map.php";
 </style>
 
 <div id="battlefield">
-        <div id="grid"></div>
+    <?php if ($x<0){
+       echo '
+    <div id="lost">
+        <h1>You lost</h1>
+    </div>'; 
+    }?>
+    <div id="grid"></div>
 </div>
 <div id="popout-bubble" class="speech bottom" style="visibility: hidden;">
     <h3 id="selected-name">None</h3>
@@ -43,6 +104,7 @@ require "get-map.php";
 <div id="bulletbox">
     <div id="bullet" style="visibility: hidden;"></div>
 </div>
+
 
 <script type="text/javascript">
     document.addEventListener("keydown", (e) => {
@@ -120,6 +182,10 @@ require "get-map.php";
 
     function check_if_visible(target_x, target_y, player_x, player_y)
     {
+        if (player_x < 0){
+            return false;
+        }
+
         let x0 = player_x;
         let y0 = player_y;
         let x1 = target_x;
@@ -334,8 +400,11 @@ require "get-map.php";
             namediv.innerHTML = target_tank.tank_name;
             
             let trueHeight = popupRect.height;
+
+            console.log(popout.offsetHeight, cellRect.height);
             popout.style.top = (cellRect.top - popout.offsetHeight - 70).toString()+"px";
             popout.style.left = (cellRect.left-popupRect.width/2+cellRect.width/2).toString()+"px";
+            console.log(popout.offsetHeight, cellRect.height);
         }
     };
 
