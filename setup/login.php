@@ -105,14 +105,27 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body{ font: 14px sans-serif; }
-        .wrapper{ width: 360px; padding: 20px; }
+        .wrapper{ 
+            width: 70%; 
+            padding: 20px;
+            height: 100vh;
+            font-size: 2vh;
+             }
+        .wrapper>h2{
+            font-size: 4vh;
+        }
+        .form-group{
+            /*height: 30vh;*/
+        }
+        .form-group>input{
+            height: 5vh;
+            font-size: inherit;
+        }
     </style>
 </head>
 <body>
     <div class="wrapper">
         <h2>Login</h2>
-        <p>Please fill in your credentials to login.</p>
-
         <?php 
         if(!empty($login_err)){
             echo '<div class="alert alert-danger">' . $login_err . '</div>';
