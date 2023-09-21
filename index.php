@@ -3,16 +3,24 @@ define("index_check", true);
 
 // Initialize the session
 session_start();
+require_once "config.php";
+require_once 'setup/remember_me.php';
  
 // Check if the user is logged in, if not then redirect him to login page
-if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
+if(!is_user_logged_in()){
 	$link = 'https://'.$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
-	$url_components = parse_url($link);
-    header("location: setup/login.php?redirect_uri=".$url_components["query"]);
+    $url_components = parse_url($link);
+    if (isset($url_components["query"])){
+        header("location: setup/login.php?redirect_uri=".$url_components["query"]);
+    }
+    else {
+        header("location: setup/login.php");
+    };
+	
+    
     exit;
 }
 
-require_once "config.php";
 
 if (array_key_exists('delete_game', $_REQUEST)){
        

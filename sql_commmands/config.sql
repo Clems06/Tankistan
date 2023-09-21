@@ -39,3 +39,15 @@ CREATE TABLE IF NOT EXISTS logs
     other VARCHAR(100) DEFAULT NULL,
     game_id VARCHAR(100)
 );
+
+CREATE TABLE IF NOT EXISTS user_tokens
+(
+    id               INT AUTO_INCREMENT PRIMARY KEY,
+    selector         VARCHAR(255) NOT NULL,
+    hashed_validator VARCHAR(255) NOT NULL,
+    user_id          INT      NOT NULL,
+    expiry           DATETIME NOT NULL,
+    CONSTRAINT fk_user_id
+        FOREIGN KEY (user_id)
+            REFERENCES users (id) ON DELETE CASCADE
+);

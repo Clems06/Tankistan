@@ -1,19 +1,23 @@
 <?php
 // Initialize the session
 session_start();
- 
+require_once "../config.php";
+require_once 'remember_me.php';
 // Check if the user is already logged in, if yes then redirect him to welcome page
-if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
+if(is_user_logged_in()){
     header("location: ../index.php");
     exit;
 }
- 
+
 // Include config file
-require_once "../config.php";
+
+
  
 // Define variables and initialize with empty values
-$username = $password = "";
+$id = $username = $password = "";
 $username_err = $password_err = $login_err = "";
+
+
  
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
@@ -55,17 +59,14 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     mysqli_stmt_bind_result($stmt, $id, $username, $hashed_password);
                     if(mysqli_stmt_fetch($stmt)){
                         if(password_verify($password, $hashed_password)){
-                            // Password is correct, so start a new session
-                            
-                            // Store data in session variables
-                            $_SESSION["loggedin"] = true;
-                            $_SESSION["id"] = $id;
-                            $_SESSION["username"] = $username;                            
-                            
+                            log_user_in($username, $id);
+                            if (isset($_POST["remember"])){
+                                remember_me($id);
+                            }
+
                             // Redirect user to welcome page
                             
                             if (isset($_REQUEST["redirect_uri"])){
-                                //echo "location: ..?" . $_REQUEST["redirect_uri"];
                                 header("location: ..?" . $_REQUEST["redirect_uri"]);
                             }
                             else {
@@ -121,6 +122,20 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             height: 5vh;
             font-size: inherit;
         }
+        #remember_block{
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            text-align: center;
+            margin:0;
+        }
+        .form-group>input[type="checkbox"]{
+            margin-left: 1vh;
+            width: 2vh;
+        }
+        label[for="remember"]{
+            margin: 0;
+        }
     </style>
 </head>
 <body>
@@ -142,6 +157,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 <label>Password</label>
                 <input type="password" name="password" class="form-control <?php echo (!empty($password_err)) ? 'is-invalid' : ''; ?>">
                 <span class="invalid-feedback"><?php echo $password_err; ?></span>
+            </div>
+            <div class="form-group" id="remember_block">
+                <label for="remember">Remember me</label>
+                <input id="remember" type="checkbox" name="remember">
             </div>
             <div class="form-group">
                 <input type="submit" class="btn btn-primary" value="Login">

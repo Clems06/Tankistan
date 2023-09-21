@@ -30,7 +30,6 @@ $sql = "SELECT game_id FROM tanks WHERE name=?;";
 $stmt = mysqli_prepare($link, $sql);
 mysqli_stmt_bind_param($stmt, "s", $param_username);
 $param_username = $_SESSION['username'];
-    
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 
